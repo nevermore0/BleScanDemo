@@ -2,6 +2,8 @@ package com.minewbeacon.blescan.demo;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.minew.beacon.BeaconValueIndex;
 import com.minew.beacon.BluetoothState;
 import com.minew.beacon.MinewBeacon;
 import com.minew.beacon.MinewBeaconManager;
@@ -34,6 +37,29 @@ public class MainActivity extends AppCompatActivity {
     private boolean mIsRefreshing;
     private int state;
 
+    private MediaPlayer mp;
+    private double RSSIthreshold = -75.0;
+
+    public void ringmyalarm() {
+        try {
+            mp = new MediaPlayer();
+            mp.setDataSource(this, RingtoneManager
+                    .getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+            mp.prepare();
+            mp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return;
+    }
+
+    public void stopalarm() {
+        if(mp != null && mp.isPlaying()) {
+            mp.stop();
+            mp.release();
+            mp = null;
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +199,19 @@ public class MainActivity extends AppCompatActivity {
                         if (state == 1 || state == 2) {
                         } else {
                             mAdapter.setItems(minewBeacons);
+                            boolean flag = false;
+                            for(MinewBeacon mMinewBeacon:minewBeacons) {
+                                Double rssi = Double.parseDouble(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue());
+                                if(rssi > RSSIthreshold) {
+                                    flag = true;
+                                    ringmyalarm();
+                                    break;
+                                }
+                            }
+                            if(!flag) {
+                                stopalarm();
+                            }
                         }
-
                     }
                 });
             }

@@ -1,6 +1,10 @@
 package com.minewbeacon.blescan.demo;
 
+import com.minewbeacon.blescan.demo.MyAlarmManager.*;
 
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.MyViewHolder> {
 
     private List<MinewBeacon> mMinewBeacons = new ArrayList<>();
+    private double RSSIthreshold = -75.0;
+
+    MediaPlayer mp = new MediaPlayer();
+
+    public String returnStatus(String inrss) {
+        double rss = Double.parseDouble(inrss);
+        if(rss >= RSSIthreshold) {
+            return "Yes";
+        } else {
+            return "No";
+        }
+    }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -93,11 +110,12 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.My
                 batt = 100;
             }
 
-            String format = String.format("Major:%s Minor:%s Rssi:%s Battery:%s",
+            String format = String.format("Major:%s Minor:%s Rssi:%s Battery:%s Status:%s",
                     mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Major).getStringValue(),
                     mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue(),
                     mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue(),
-                    batt + "");
+                    batt + "",
+                    returnStatus(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue()));
             mDevice_other.setText(format);
 
             if (mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Humidity).getFloatValue() == 0 &&
