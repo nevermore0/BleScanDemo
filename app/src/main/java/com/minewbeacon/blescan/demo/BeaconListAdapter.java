@@ -82,39 +82,36 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView mDevice_mac;
+        //private final TextView mDevice_mac;
         private MinewBeacon mMinewBeacon;
         private final TextView mDevice_temphumi;
         private final TextView mDevice_name;
-        private final TextView mDevice_uuid;
+        //private final TextView mDevice_uuid;
         private final TextView mDevice_other;
 
 
         public MyViewHolder(View itemView) {
             super(itemView);
             mDevice_name = (TextView) itemView.findViewById(R.id.device_name);
-            mDevice_uuid = (TextView) itemView.findViewById(R.id.device_uuid);
+            //mDevice_uuid = (TextView) itemView.findViewById(R.id.device_uuid);
             mDevice_other = (TextView) itemView.findViewById(R.id.device_other);
             mDevice_temphumi = (TextView) itemView.findViewById(R.id.device_temphumi);
-            mDevice_mac = (TextView) itemView.findViewById(R.id.device_mac);
+            //mDevice_mac = (TextView) itemView.findViewById(R.id.device_mac);
         }
 
         public void setDataAndUi(MinewBeacon minewBeacon) {
             mMinewBeacon = minewBeacon;
             mDevice_name.setText(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Name).getStringValue());
-            mDevice_mac.setText(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_MAC).getStringValue());
+            /*mDevice_mac.setText(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_MAC).getStringValue());
             mDevice_uuid.setText("UUID:" + mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_UUID).getStringValue());
             String battery = mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_BatteryLevel).getStringValue();
             int batt = Integer.parseInt(battery);
             if (batt > 100) {
                 batt = 100;
-            }
+            }*/
 
-            String format = String.format("Major:%s Minor:%s Rssi:%s Battery:%s Status:%s",
-                    mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Major).getStringValue(),
-                    mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Minor).getStringValue(),
+            String format = String.format("Rssi:%s Status:%s",
                     mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue(),
-                    batt + "",
                     returnStatus(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue()));
             mDevice_other.setText(format);
 
