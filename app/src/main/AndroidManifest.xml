@@ -25,6 +25,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.minewbeacon.blescan.demo.RSSIManager"
+            android:screenOrientation="portrait">
+        </activity>
+
         <service android:name="com.minew.beacon.ScanService"/>
         <receiver android:name="com.minew.beacon.BluetoothChangedReceiver">
             <intent-filter>

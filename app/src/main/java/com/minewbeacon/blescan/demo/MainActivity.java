@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +39,11 @@ public class MainActivity extends AppCompatActivity {
     private int state;
 
     private MediaPlayer mp;
-    private double RSSIthreshold = -75.0;
+    private static double RSSIthreshold = -75.0;
+
+    public static void userSetRSSI(double input) {
+        RSSIthreshold = -input;
+    }
 
     public void ringmyalarm() {
         try {
@@ -64,6 +69,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button btn1 = (Button) findViewById(R.id.setRssi);
+        btn1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent i = new Intent(MainActivity.this , RSSIManager.class);
+                startActivity(i);
+            }
+        });
 
         initView();
         initManager();
