@@ -11,7 +11,8 @@ import android.widget.LinearLayout;
 import com.yuliwuli.blescan.demo.R;
 
 public class RSSIManager extends Activity{
-    public EditText edt;
+    public EditText set1m;
+    public EditText set6m;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,14 +28,23 @@ public class RSSIManager extends Activity{
             }
         });
 
-        Button btn2 = (Button) findViewById(R.id.confirm);
-        edt =(EditText) findViewById(R.id.edit);
+        set1m =(EditText) findViewById(R.id.edit1m);
+        Button btn1m = (Button) findViewById(R.id.confirm1m);
+
+        set6m =(EditText) findViewById(R.id.edit6m);
+        Button btn6m = (Button) findViewById(R.id.confirm6m);
 
     }
 
-    public void onClick(View view) {
-        String reads = edt.getText().toString();
+    public void onClick1m(View view) {
+        String reads = set1m.getText().toString();
         double newrssi = Double.parseDouble(reads);
-        MainActivity.userSetRSSI(newrssi);
+        MainActivity.userSet1m(newrssi);
+    }
+
+    public void onClick6m(View view) {
+        String reads = set6m.getText().toString();
+        double newrssi = Double.parseDouble(reads);
+        MainActivity.userSet6m(newrssi);
     }
 }

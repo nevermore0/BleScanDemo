@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
-
         <TextView
             android:id="@+id/start_scan"
             android:layout_width="wrap_content"
@@ -22,19 +21,37 @@
             android:padding="5dp"
             android:text="Start"
             android:textSize="18sp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/setRssi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginRight="20dp"
-            android:padding="5dp"
-            android:text="settings"
-            android:textSize="18sp"
-            />
+            <Button
+                android:id="@+id/setRssi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginRight="20dp"
+                android:padding="5dp"
+                android:text="settings"
+                android:textSize="18sp"
+                />
+        </RelativeLayout>
+
 
     </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <Switch
+            android:id="@+id/switch_alarm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="alarm off"
+            android:textOn="alarm on"/>
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyeler"

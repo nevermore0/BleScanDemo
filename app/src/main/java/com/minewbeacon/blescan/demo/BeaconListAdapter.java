@@ -3,6 +3,7 @@ package com.minewbeacon.blescan.demo;
 import com.minewbeacon.blescan.demo.MyAlarmManager.*;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,18 +23,8 @@ import java.util.List;
 public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.MyViewHolder> {
 
     private List<MinewBeacon> mMinewBeacons = new ArrayList<>();
-    private double RSSIthreshold = -75.0;
+    private double DistanceThreshold = 6.0;
 
-    MediaPlayer mp = new MediaPlayer();
-
-    public String returnStatus(String inrss) {
-        double rss = Double.parseDouble(inrss);
-        if(rss >= RSSIthreshold) {
-            return "Yes";
-        } else {
-            return "No";
-        }
-    }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -89,7 +80,38 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.My
         //private final TextView mDevice_uuid;
         private final TextView mDevice_other;
 
+        double firstRssi = 1.0;
+        double secondRssi = 1.0;
+        double firstDistance = 0.0;
+        double secondDistance = 0.0;
 
+
+        public double predict(String originDistance,String Rssi) {
+            Double distance = Double.parseDouble(originDistance);
+            if(firstRssi > 0) {
+                firstRssi = Double.parseDouble(Rssi);
+                firstDistance = distance;
+                return distance;
+            } else if(secondRssi > 0) {
+                secondRssi = Double.parseDouble(Rssi);
+                secondDistance = distance;
+                return distance;
+            }
+            double res = - 1.0;
+            if((Double.parseDouble(Rssi) > secondRssi) && (secondRssi > firstRssi)) {
+                res = secondDistance - (firstDistance - secondDistance) / 2;
+            } else if((Double.parseDouble(Rssi) < secondRssi) && (secondRssi < firstRssi)) {
+                res = secondDistance + (secondDistance - firstDistance) / 2;
+            }
+            firstRssi = secondRssi;
+            firstDistance = secondDistance;
+            secondRssi = Double.parseDouble(Rssi);
+            secondDistance = distance;
+            if(res < 0) {
+                return distance;
+            }
+            return res;
+        }
         public MyViewHolder(View itemView) {
             super(itemView);
             mDevice_name = (TextView) itemView.findViewById(R.id.device_name);
@@ -109,10 +131,17 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.My
             if (batt > 100) {
                 batt = 100;
             }*/
+            String  distance = MainActivity.getDistance(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue());
 
-            String format = String.format("Rssi:%s Status:%s",
+            double distance_value = Double.parseDouble(distance);
+            double estimatedDistance = predict(distance,mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue());
+
+            double show_distance = Math.floor(distance_value * 10000)/10000;
+            double show_estimated = Math.floor(estimatedDistance * 10000)/10000;
+            String format = String.format("Rssi:%s Distance:%s Esitimated Distance:%s",
                     mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue(),
-                    returnStatus(mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_RSSI).getStringValue()));
+                    show_distance,
+                    show_estimated);
             mDevice_other.setText(format);
 
             if (mMinewBeacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_Humidity).getFloatValue() == 0 &&
@@ -126,7 +155,11 @@ public class BeaconListAdapter extends RecyclerView.Adapter<BeaconListAdapter.My
 
                 mDevice_temphumi.setText(temphumi + "%");
             }
-
+            if(estimatedDistance <= DistanceThreshold) {
+                this.itemView.setBackgroundColor(Color.parseColor("#ff0000"));
+            } else {
+                this.itemView.setBackgroundColor(Color.parseColor("#ffffff"));
+            }
         }
     }
 }

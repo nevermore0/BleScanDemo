@@ -2,6 +2,7 @@ package com.minewbeacon.blescan.demo;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,15 +40,42 @@ public class MainActivity extends AppCompatActivity {
     private TextView mStart_scan;
     private boolean mIsRefreshing;
     private int state;
+    private boolean alarm_switch = false;
 
     private MediaPlayer mp;
     private static double RSSIthreshold = -75.0;
+
+    private static double RSSI1m = -70.0;
+    public static void userSet1m(double input) {
+        RSSI1m = -input;
+    }
+    public static double getRSSI1m() {
+        return RSSI1m;
+    }
+
+    private static double RSSI6m = -85.0;
+    public static void userSet6m(double input) {
+        RSSI6m = -input;
+    }
+    public static double getRSSI6m() {
+        return RSSI6m;
+    }
 
     public static void userSetRSSI(double input) {
         RSSIthreshold = -input;
     }
 
+    public static String getDistance(String inRssi) {
+        double d;
+        double inr = Double.parseDouble(inRssi);
+        double n = (-RSSI6m + RSSI1m) / (10*Math.log10(6));
+        d = Math.pow(10, (-inr + RSSI1m)/10/n);
+        return Double.toString(d);
+    }
+
     public void ringmyalarm() {
+        if(!alarm_switch) return;
+
         try {
             mp = new MediaPlayer();
             mp.setDataSource(this, RingtoneManager
@@ -76,6 +106,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent i = new Intent(MainActivity.this , RSSIManager.class);
                 startActivity(i);
+            }
+        });
+
+        Switch alarmSwitch = (Switch) findViewById(R.id.switch_alarm);
+        alarmSwitch.setChecked(false);
+        alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    alarm_switch = true;
+                }else {
+                    alarm_switch = false;
+                }
             }
         });
 
@@ -112,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
         mStart_scan = (TextView) findViewById(R.id.start_scan);
 
         mRecycle = (RecyclerView) findViewById(R.id.recyeler);
+
+        //mRecycle.setBackgroundColor(Color.parseColor("#ff0000"));
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecycle.setLayoutManager(layoutManager);
         mAdapter = new BeaconListAdapter();
